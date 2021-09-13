@@ -1,7 +1,7 @@
 import React from 'react'
 import { FaCode } from "react-icons/fa";
 
-function LandingPage() {
+function LandingPage(props) {
     return (
         <>
             <div className="app">
