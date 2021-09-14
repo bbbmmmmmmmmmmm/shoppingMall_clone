@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
 import { Card, Col, Icon, message, Row, Typography } from 'antd';
 import ImageSlider from '../../utils/ImageSlider';
+import CheckBox from './Sections/CheckBox';
 
 const { Title } = Typography;
 const { Meta } = Card;
@@ -11,6 +12,10 @@ function LandingPage() {
     const [skip, setSkip] = useState(0);
     const [limit, setLimit] = useState(8);
     const [postSize, setPostSize] = useState(0);
+    const [filters, setFilters] = useState({
+        continents: [],
+        price: []
+    })
 
     useEffect(() => {
         const variables = {
@@ -25,8 +30,11 @@ function LandingPage() {
         Axios.post('/api/product/getProducts', variables)
             .then(response => {
                 if (response.data.success) {
-                    console.log(response.data.products);
-                    setProducts([...products, ...response.data.products]);
+                    if (variables.loadMore) {
+                        setProducts([...products, ...response.data.products]);
+                    } else {
+                        setProducts(response.data.products);
+                    }
                     setPostSize(response.data.postSize);
                 } else {
                     message.error('상품 리스트를 불러오는데 실패했습니다.');
@@ -53,11 +61,36 @@ function LandingPage() {
 
         const variables = {
             skip: skipTemp,
-            limit
+            limit,
+            loadMore: true
         }
 
         getProducts(variables);
         setSkip(skipTemp);
+    }
+
+    const showFilterResults = (filters) => {
+        const variables = {
+            skip: 0,
+            limit,
+            filters
+        }
+
+        getProducts(variables);
+        setSkip(0);
+    }
+
+    const handleFilters = (Filters, category) => {
+        const newFilters = { ...filters }
+
+        newFilters[category] = Filters;
+
+        if (category === 'price') {
+
+        }
+
+        showFilterResults(newFilters);
+        setFilters(newFilters);
     }
 
     return (
@@ -67,7 +100,9 @@ function LandingPage() {
             </div>
 
             {/* Filter */}
-
+            <CheckBox
+                handleFilters={filters => handleFilters(filters, 'continents')}
+            />
 
             {/* Search */}
 
