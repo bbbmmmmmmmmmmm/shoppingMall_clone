@@ -83,7 +83,23 @@ router.post('/getProducts', (req, res) => {
                 res.json({ success: true, products, postSize: products.length });
             })
     }
+})
 
+// ?id=${productId}&type=single
+router.get('/products_by_id', (req, res) => {
+    const type = req.query.type;
+    const productIds = req.query.id;
+
+    if (type === 'array') {
+
+    }
+
+    Product.find({ _id: { $in: productIds } })
+        .populate('writer')
+        .exec((err, products) => {
+            if (err) return res.json({ success: false, err });
+            res.json({ success: true, products });
+        })
 })
 
 module.exports = router;
