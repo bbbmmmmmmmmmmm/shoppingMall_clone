@@ -88,17 +88,21 @@ router.post('/getProducts', (req, res) => {
 // ?id=${productId}&type=single
 router.get('/products_by_id', (req, res) => {
     const type = req.query.type;
-    const productIds = req.query.id;
+    let productIds = req.query.id;
 
     if (type === 'array') {
-
+        let ids = req.query.id.split(',');
+        productIds = [];
+        productIds = ids.map(item => {
+            return item
+        })
     }
 
     Product.find({ _id: { $in: productIds } })
         .populate('writer')
-        .exec((err, products) => {
-            if (err) return res.json({ success: false, err });
-            res.json({ success: true, products });
+        .exec((err, product) => {
+            if (err) return res.status(400).send(err);
+            res.status(200).send(product);
         })
 })
 
